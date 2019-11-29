@@ -90,7 +90,8 @@
       <div id="sidebar" class="sidebar py-3">
         <div class="text-gray-400 text-uppercase px-3 px-lg-4 py-4 font-weight-bold small headings-font-family">MAIN</div>
         <ul class="sidebar-menu list-unstyled">
-              <li class="sidebar-list-item"><a href="index.html" class="sidebar-link text-muted active"><i class="o-home-1 mr-3 text-gray"></i><span>首页</span></a></li>
+              <li class="sidebar-list-item"><a href="/" class="sidebar-link text-muted active"><i class="o-home-1 mr-3 text-gray"></i><span>首页</span></a></li>
+              <li class="sidebar-list-item"><a href="/product" class="sidebar-link text-muted"><i class="o-database-1 mr-3 text-gray"></i><span>商品详情页</span></a></li>
               <li class="sidebar-list-item"><a href="charts.html" class="sidebar-link text-muted"><i class="o-sales-up-1 mr-3 text-gray"></i><span>统计表</span></a></li>
               <li class="sidebar-list-item"><a href="tables.html" class="sidebar-link text-muted"><i class="o-table-content-1 mr-3 text-gray"></i><span>数据表</span></a></li>
               <li class="sidebar-list-item"><a href="forms.html" class="sidebar-link text-muted"><i class="o-survey-1 mr-3 text-gray"></i><span>表格</span></a></li>
@@ -115,13 +116,12 @@
         </ul>
       </div>
 
-{#      <div class="page-holder w-100 d-flex flex-wrap">#}
-{#        <div class="container-fluid px-xl-5">#}
-{#            <!--内容填充-->#}
-{#        </div>#}
-        {% block content %}
+      <div class="page-holder w-100 d-flex flex-wrap">
+        <div class="container-fluid px-xl-5">
+            {% block content %}
             <!--内容填充-->
-        {% endblock %}
+            {% endblock %}
+        </div>
 
         {% block foot %}
         <footer class="footer bg-white shadow align-self-end py-3 px-xl-5 w-100">
@@ -147,5 +147,19 @@
     <script src="{% static 'app/js/js.cookie.min.js'%}"></script>
     <script src="{% static 'app/js/charts-home.js'%}"></script>
     <script src="{% static 'app/js/front.js'%}"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".sidebar-list-item a").each(function () {
+            var a = $(this)[0];
+            if ($(a).attr("href") === location.pathname) {
+                console.log(location.pathname)
+                $(this).addClass('active');
+            } else {
+                $($(this).removeClass('active'))
+            }
+        });
+    })
+</script>
   </body>
 </html>
