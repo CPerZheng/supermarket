@@ -11,7 +11,9 @@ def index(request):
 
 
 def product(request):
-    return render(request, "app/product.html")
+    if request.method == 'GET':
+        
+        return render(request, "app/product.html")
 
 
 def product_classify_operate(request):
@@ -31,11 +33,25 @@ def product_classify_operate(request):
         return render(request, "app/product_classify.html", data)
     if request.method == 'POST':
         data = request.POST.dict()
-        pro_classify = data.get('pro_classify')
-        has_classify = Classify.objects.filter(name=pro_classify)
-        if has_classify:
-            return write_json({"errno": "1", "msg": "this classify had already add!"})
-        else:
-            Classify.objects.create(name=pro_classify)
-            return write_json({"errno": "0", "msg": "success!"})
-
+        pc_action = data.get('action')
+        pro_classify = data.get('classify_name')
+        if pc_action == "add":
+            has_classify = Classify.objects.filter(name=pro_classify)
+            if has_classify:
+                return write_json({"errno": "1", "msg": "this classify had already add!"})
+            else:
+                Classify.objects.create(name=pro_classify)
+                return write_json({"errno": "0", "msg": "success"})
+        elif pc_action == "edit":
+            classify_id = data.get('classify_id')
+            Classify.objects.filter(id=classify_id).update(name=pro_classify)
+            return write_json({"errno": "0", "msg": "success"})
+        elif pc_action == "del":
+            classify_id = data.get('classify_id')
+            if classify_id:
+                Classify.objects.filter(id=classify_id).delete()
+                return write_json({"errno": "0", "msg": "success"})
+            else:
+                return write_json({"errno": "1", "msg": "lost the id!"})
+    else:
+        return write_json({"errno": "2", "msg": "not action to do!"})

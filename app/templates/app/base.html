@@ -247,9 +247,9 @@
     $(document).ready(function () {
         $(".sidebar-list-item a").each(function () {
             var a = $(this)[0];
-            console.log(location.pathname)
+            {#console.log(location.pathname)#}
             if ($(a).attr("href") === location.pathname) {
-                console.log(location.pathname)
+                {#console.log(location.pathname)#}
                 $(this).addClass('active');
             } else {
                 $($(this).removeClass('active'))
