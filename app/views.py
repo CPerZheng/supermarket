@@ -19,14 +19,17 @@ def product(request):
 def product_classify_operate(request):
     """classify operate function"""
     if request.method == 'GET':
-        # search_word = request.GET.get('s', '').strip()  # 获取查询关键字
+        search_word = request.GET.get('classify_search', '').strip()  # 获取查询关键字
         pc_list = Classify.objects.all()
+        if search_word:
+            pc_list = Classify.objects.filter(name__contains=search_word)
 
         p = int(request.GET.get('p', 1))
         limit = int(request.GET.get('limit', 10))
         paginator = Paginator(pc_list, limit)
         page = paginator.page(p)
         data = {
+            'classify_search': search_word,
             'pc_list': page.object_list,
             'paginator': page,
         }
