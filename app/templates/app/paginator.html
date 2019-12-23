@@ -1,0 +1,30 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'app/css/page.css' %}">
+
+<div style="text-align: center;">
+    <div id="pager" class="pager clearfix">
+    </div>
+</div>
+
+<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+{#<script src="{% static 'app/js/jquery.min.js' %}"></script>#}
+<script src="{% static 'app/js/jquery.z-pager.js' %}" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    url = location.href;
+    $("#pager").zPager({
+        totalData: {{ total_count }},  //数据总条数
+        pageData: 1,  //每页显示数据数
+        url: url,
+        htmlBox: $('#wraper'),  //ajax数据写入容器
+        btnShow: true,
+        {#ajaxSetData: false,#}
+    });
+
+    function currentPage(currentPage){
+        /*
+            触发页码数位置： Page/js/jquery.z-pager.js 64行
+        */
+        console.log("当前页码数：" + currentPage);
+    }
+</script>

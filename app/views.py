@@ -24,14 +24,16 @@ def product_classify_operate(request):
         if search_word:
             pc_list = Classify.objects.filter(name__contains=search_word)
 
-        p = int(request.GET.get('p', 1))
-        limit = int(request.GET.get('limit', 10))
-        paginator = Paginator(pc_list, limit)
-        page = paginator.page(p)
+        total_count = pc_list.count()
+        p = int(request.GET.get('page', 1))  # 当前页
+        # limit = int(request.GET.get('limit', 10))  # 每页限定数据数量
+        paginator = Paginator(pc_list, 2)  # 分页器
+        page = paginator.page(p)  # 当前页数据
         data = {
             'classify_search': search_word,
             'pc_list': page.object_list,
             'paginator': page,
+            'total_count': total_count,
         }
         return render(request, "app/product_classify.html", data)
     if request.method == 'POST':
