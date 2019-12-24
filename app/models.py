@@ -27,12 +27,16 @@ class Classify(models.Model):
 class Supplier(models.Model):
     """供应商"""
     supplier_name = models.CharField(max_length=50, help_text="供应商名称")
-    name = models.CharField(max_length=30, help_text="联系人姓名")
-    phone = models.CharField(max_length=30, help_text="联系人电话")
+    name = models.CharField(max_length=30, blank=True, help_text="联系人姓名")
+    phone = models.CharField(max_length=30, blank=True, help_text="联系人电话")
+    card_num = models.CharField(max_length=30, blank=True, help_text="银行卡号")
     create_time = models.DateTimeField(auto_now_add=True, help_text="创建时间")
 
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        ordering = ['id']
 
 
 class Employee(models.Model):
@@ -48,6 +52,9 @@ class Employee(models.Model):
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        ordering = ['id']
+
 
 class Product(models.Model):
     """商品信息"""
@@ -61,6 +68,9 @@ class Product(models.Model):
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        ordering = ['id']
+
 
 class Order(models.Model):
     """进货订单表"""
@@ -72,6 +82,9 @@ class Order(models.Model):
 
     def __unicode__(self):
         return self.order_num
+
+    class Meta:
+        ordering = ['id']
 
 
 class OrderItem(models.Model):
@@ -85,6 +98,9 @@ class OrderItem(models.Model):
     def __init__(self):
         return self.id
 
+    class Meta:
+        ordering = ['id']
+
 
 class Warehousing(models.Model):
     """入库信息表"""
@@ -96,6 +112,9 @@ class Warehousing(models.Model):
     def __unicode__(self):
         return self.ware_num
 
+    class Meta:
+        ordering = ['id']
+
 
 class ExWareHousing(models.Model):
     """出库信息表"""
@@ -106,4 +125,7 @@ class ExWareHousing(models.Model):
 
     def __unicode__(self):
         return self.ex_ware_num
+
+    class Meta:
+        ordering = ['id']
 
