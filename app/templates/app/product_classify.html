@@ -84,7 +84,7 @@
                                             <tr>
                                                 <th scope="row">{{ pc.id }}</th>
                                                 <td>{{ pc.name }}</td>
-                                                <td>{{ pc.create_time }}</td>
+                                                <td>{{ pc.create_time|date:"Y-m-d" }}</td>
                                                 <td>
                                                     <button type="button" class="btn btn-danger classify_del">删除
                                                     </button>

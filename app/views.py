@@ -1,8 +1,11 @@
-# encoding=utf-8
+# coding:utf-8
+import datetime
+
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.shortcuts import render
-from app.models import Classify, Supplier
-from app.utils import write_json
+from app.models import Classify, Supplier, Product
+from app.utils import write_json, product_num_id
 
 
 # Create your views here.
@@ -121,6 +124,93 @@ def supplier(request):
 
 
 def product(request):
+    """product operate function"""
+    data = request.POST.dict()
     if request.method == 'GET':
-        return render(request, "app/product.html")
+        search_word = request.GET.get('product_search', '').strip()  # 获取查询关键字
+        pr_list = Product.objects.all()
+        if search_word:
+            find_product = (Q(name__icontains=search_word) | Q(pro_num__icontains=search_word))
+            pr_list = Product.objects.filter(find_product)
+
+        p_classify = Classify.objects.all()
+        p_supplier = Supplier.objects.all()
+
+        total_count = pr_list.count()
+        p = int(request.GET.get('page', 1))  # 当前页
+        # limit = int(request.GET.get('limit', 10))  # 每页限定数据数量
+        paginator = Paginator(pr_list, 2)  # 分页器
+        page = paginator.page(p)  # 当前页数据
+        data = {
+            'product_search': search_word,
+            'pr_list': page.object_list,
+            'product_classify': p_classify,
+            'product_supplier': p_supplier,
+            'paginator': page,
+            'total_count': total_count,
+        }
+        return render(request, "app/product.html", data)
+    if request.method == 'POST':
+        pr_action = data.get('action')
+        pro = data.get('name')
+
+        if pr_action == "add":
+            has_product = Product.objects.filter(name=pro)
+            if has_product:
+                return write_json({"errno": "1", "msg": "this product had already add!"})
+
+            # 实例化
+            pro_classify = Classify.objects.get(id=data.get('classify'))
+            pro_supplier = Supplier.objects.get(id=data.get('supplier'))
+
+            pro_num = product_num_id()  # 生成商品编号
+
+            add_data = {
+                'name': data.get('name'),
+                'pro_num': pro_num,
+                'classify': pro_classify,
+                'date_of_manufacture': data.get('date_of_manufacture'),
+                'guarantee_period': data.get('guarantee_period'),
+                'preserve': u'干燥保存' if data.get('preserve') == '01' else u'低温保存',
+                'supplier': pro_supplier
+            }
+
+            Product.objects.create(**add_data)  # 添加数据
+            return write_json({"errno": "0", "msg": "success"})
+
+        elif pr_action == "edit":
+            product_id = data.get('product_id')
+            tp = Product.objects.get(id=product_id)
+            dm = data.get('date_of_manufacture')
+            gp = data.get('guarantee_period')
+            print(1, dm, gp)
+            if dm == '':
+                dm = tp.date_of_manufacture
+            if gp == '':
+                gp = tp.guarantee_period
+            print(2, dm, gp)
+            edit_data = {
+                'name': data.get('name'),
+                'classify': data.get('classify'),
+                'date_of_manufacture': dm,
+                'guarantee_period': gp,
+                'preserve': data.get('preserve'),
+                'supplier': data.get('supplier'),
+                'last_update': datetime.datetime.now()
+            }
+            if product_id:
+                Product.objects.filter(id=product_id).update(**edit_data)
+                return write_json({"errno": "0", "msg": "success"})
+            else:
+                return write_json({"errno": "1", "msg": "lost the id!"})
+
+        elif pr_action == "del":
+            product_id = data.get('product_id')
+            if product_id:
+                Product.objects.filter(id=product_id).delete()
+                return write_json({"errno": "0", "msg": "success"})
+            else:
+                return write_json({"errno": "1", "msg": "lost the id!"})
+    else:
+        return write_json({"errno": "2", "msg": "not action to do!"})
 

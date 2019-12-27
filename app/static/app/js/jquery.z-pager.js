@@ -209,8 +209,15 @@
 					type: 'get',
 					data: {"page":_current},
 	                dataType: 'json',
-	                cache : false,  
         			async : false,
+	                cache : false,
+					success: function (data) {
+						// location.href='?page='+currentPage;
+						console.log("hhh");
+					}, error: function (data) {
+						console.log(_url, _current, _total);
+					}
+					/*
 	                success: function(data) {
 	                	if(data.total && (data.total!==0)){
 	                        parms['total'] = data.total;
@@ -240,8 +247,10 @@
 						}
 						console.log(textStatus+'：'+XMLHttpRequest.readyState+'-'+msg);
 					}
+					*/
 				})
 				return parms;
+				// return location.href="?page="+_current;
 			})();
 		}
 	}
@@ -288,7 +297,7 @@
 
 	$.fn.zPager.defaults = {
 		totalData: 50, //数据总条数
-		pageData: 2, //每页数据条数
+		pageData: 10, //每页数据条数
 		pageCount: 0, //总页数
 		current: 1, //当前页码数
 		pageStep: 8, //当前可见最多页码个数
