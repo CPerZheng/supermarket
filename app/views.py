@@ -155,15 +155,15 @@ def product(request):
         pro = data.get('name')
 
         if pr_action == "add":
-            has_product = Product.objects.filter(name=pro)
-            if has_product:
-                return write_json({"errno": "1", "msg": "this product had already add!"})
 
             # 实例化
             pro_classify = Classify.objects.get(id=data.get('classify'))
             pro_supplier = Supplier.objects.get(id=data.get('supplier'))
 
             pro_num = product_num_id()  # 生成商品编号
+            has_pro_num = Product.objects.filter(pro_num=pro_num)
+            while has_pro_num == pro_num:
+                pro_num = product_num_id()
 
             add_data = {
                 'name': data.get('name'),
