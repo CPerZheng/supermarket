@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^product_classify$', app.views.product_classify_operate),
     url(r'^classify/operate$', app.views.product_classify_operate),
     url(r'^supplier$', app.views.supplier),
+    url(r'^order$', app.views.order),
 ]

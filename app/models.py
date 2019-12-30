@@ -76,7 +76,7 @@ class Product(models.Model):
 
 
 class Order(models.Model):
-    """进货订单表"""
+    """订单表"""
     order_num = models.CharField(max_length=30, verbose_name="订单编号")
     cost = models.FloatField(null=True, verbose_name="订单总额")
     order_state = models.CharField(max_length=30, choices=pro_state, verbose_name="订单状态")
@@ -95,7 +95,7 @@ class OrderItem(models.Model):
     """订单详情表"""
     product_name = models.ForeignKey(Product, null=True, on_delete=models.SET_NULL, verbose_name="商品名称")
     num = models.IntegerField(null=True, verbose_name="商品数量")
-    nuit_price = models.FloatField(null=True, verbose_name="商品单价")
+    unit_price = models.FloatField(null=True, verbose_name="商品单价")
     total_price = models.FloatField(null=True, verbose_name="商品总价")
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
 

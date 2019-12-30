@@ -1,14 +1,36 @@
 {% load staticfiles %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'app/css/page.css' %}">
+{#<script src="{% static 'app/js/jquery.min.js' %}"></script>#}
+{#<script src="{% static 'app/js/bootstrap.min.js' %}"></script>#}
+{#<script src="{% static 'app/css/bootstrap.css' %}"></script>#}
 
 <div style="text-align: center;">
-    <div id="pager" class="pager clearfix">
+    <div id="pager" class="pager clearfix" name="page">
     </div>
 </div>
+{#<nav aria-label="Page navigation">#}
+{#  <ul class="pagination">#}
+{#    <li>#}
+{#      <a href="#" aria-label="Previous">#}
+{#        <span aria-hidden="true">&laquo;</span>#}
+{#      </a>#}
+{#    </li>#}
+{#    <li><a href="#">1</a></li>#}
+{#    <li><a href="#">2</a></li>#}
+{#    <li><a href="#">3</a></li>#}
+{#    <li><a href="#">4</a></li>#}
+{#    <li><a href="#">5</a></li>#}
+{#    <li>#}
+{#      <a href="#" aria-label="Next">#}
+{#        <span aria-hidden="true">&raquo;</span>#}
+{#      </a>#}
+{#    </li>#}
+{#  </ul>#}
+{#</nav>#}
 
 <script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
-{#<script src="{% static 'app/js/jquery.min.js' %}"></script>#}
+<script src="{% static 'app/js/jquery.min.js' %}"></script>
 <script src="{% static 'app/js/jquery.z-pager.js' %}" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
     url = location.href;
@@ -19,6 +41,19 @@
         htmlBox: $('#wraper'),  //ajax数据写入容器
         btnShow: true,
         {#ajaxSetData: false,#}
+		pageCount: 2, //总页数
+		current: 1, //当前页码数
+		pageStep: 5, //当前可见最多页码个数
+		minPage: 3, //最小页码数，页码小于此数值则不显示上下分页按钮
+		active: 'current', //当前页码样式
+		prevBtn: 'pg-prev', //上一页按钮
+		nextBtn: 'pg-next', //下一页按钮
+		btnBool: true, //是否显示上一页下一页
+		firstBtn: 'pg-first', //第一页按钮
+		lastBtn: 'pg-last', //最后一页按钮
+		btnShow: true, //是否显示第一页和最后一页按钮
+		disabled: true, //按钮失效样式
+		ajaxSetData: true, //是否使用ajax获取数据 此属性为真时需要url和htmlBox不为空
     });
 
     function currentPage(currentPage){

@@ -1,0 +1,104 @@
+{% load staticfiles %}
+
+{#<link rel="stylesheet" type="text/css" href="{% static 'app/css/paging.css' %}">#}
+
+{#<div id="pageTool"></div>#}
+<nav aria-label="...">
+  <ul class="pager">
+    <li class="previous"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
+    <li class="next"><a href="#">Newer <span aria-hidden="true">&rarr;</span></a></li>
+  </ul>
+</nav>
+
+<script type="text/javascript" src="{% static 'app/js/jquery.min.js' %}"></script>
+{#<script type="text/javascript" src="{% static 'app/js/paging.js' %}"></script>#}
+<script>
+    var url = location.href;
+    (function ($) {
+        $.getUrlParam = function (name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+    })(jQuery);
+    $(function () {
+        var currentPage = {{paginator.number}};
+        var pages = {{paginator.paginator.num_pages}};
+        function GetRequest() {
+           var url = location.search; //获取url中"?"符后的字串
+           var theRequest = {};
+           if (url.indexOf("?") != -1) {
+              var str = url.substr(1);
+              strs = str.split("&");
+              for(var i = 0; i < strs.length; i ++) {
+                 theRequest[strs[i].split("=")[0]] = strs[i].split("=")[1];
+              }
+           }
+           return theRequest;
+        }
+        function tranfor(pageIndex){
+            if (location.search){
+                var req = GetRequest()
+                req['page'] = pageIndex+1
+                var paraList = []
+                for(var key in req){
+                    paraList.push(key+'='+req[key])
+                }
+                return location.href = '?' + paraList.join('&');
+            }
+            location.href='?page='+(pageIndex+1)
+        }
+        /*
+        $('[data-uk-pagination]').on('select.uk.pagination', function (e, pageIndex) {
+            tranfor(pageIndex);
+        });*/
+        $(".previous").click(function(){
+            if(currentPage != 1){
+                tranfor(currentPage-2)
+            }
+        })
+        $(".next").click(function(){
+            if(currentPage != pages){
+                tranfor(currentPage)
+            }
+        })
+    })
+    /*
+    var page = new Paging();
+    page.init({
+        target: $('#pageTool'),
+        pagesize: 2, //每页条数
+        {#count: {{ total_count }}, //数据总条数#}
+        current: 1, //当前页
+        callback: function (pagecount, size, count) {
+            {#console.log(arguments)#}
+            alert('当前第 ' + pagecount + '页,每页 ' + size + '条,总页数：' + count + '页');
+            //动态设置总条数 https://github.com/tianxiangbing/paging
+            {#page.render({count: {{ total_count }}, current: pagecount});#}
+            console.log("总数"+count+"当前页:"+pagecount);
+            getHTML();
+
+            function getHTML() {
+
+                $.ajax({
+					url: url,
+					type: 'get',
+					data: {
+					    "page":pagecount
+                    },
+	                dataType: 'json',
+        			{#async : false,#}
+	                {#cache : false,#}
+					success: function (data) {
+						// location.href='?page='+currentPage;
+						console.log("hhh");
+					}, error: function (data) {
+						{#console.log(url, pagecount, {{ this_page }});#}
+					}
+				})
+
+            }
+            //如果你不用ajax分页，你可以直接在这里location.href='xxx.html?page='+pagecount 作跳转，这样的话，页面刷新后，你要传递current进来。
+        }
+    });*/
+</script>
