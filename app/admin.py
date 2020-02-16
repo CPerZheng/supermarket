@@ -1,6 +1,5 @@
 from django.contrib import admin
-from app.models import Classify, Supplier, Employee, Product, Order, OrderItem, Warehousing, ExWareHousing
-
+from app.models import Classify, Supplier, Employee, Product, Order, OrderItem, Warehousing, ExWareHousing, Reserve
 
 # Register your models here.
 admin.site.register(Classify)
@@ -11,3 +10,4 @@ admin.site.register(Order)
 admin.site.register(OrderItem)
 admin.site.register(Warehousing)
 admin.site.register(ExWareHousing)
+admin.site.register(Reserve)
