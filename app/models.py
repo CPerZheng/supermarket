@@ -64,6 +64,7 @@ class Product(models.Model):
     date_of_manufacture = models.DateTimeField(null=True, blank=True, verbose_name="生产日期")  # format=%Y-%m-%d %H:%M:%S
     guarantee_period = models.DateTimeField(null=True, blank=True, verbose_name="保质期")  # format=%Y-%m-%d %H:%M:%S
     preserve = models.CharField(max_length=30, choices=pre_type, verbose_name="存储条件")
+    unit_of_measurement = models.CharField(max_length=30, null=True, blank=True, verbose_name="计量单位")
     supplier = models.ForeignKey(Supplier, related_name="supplier_product", null=True, on_delete=models.SET_NULL,
                                  verbose_name="供应商")
     last_update = models.DateTimeField(blank=True, null=True)
@@ -76,7 +77,7 @@ class Product(models.Model):
 
 
 class Order(models.Model):
-    """进货订单表"""
+    """订单表"""
     order_num = models.CharField(max_length=30, verbose_name="订单编号")
     cost = models.FloatField(null=True, verbose_name="订单总额")
     order_state = models.CharField(max_length=30, choices=pro_state, verbose_name="订单状态")
@@ -94,13 +95,15 @@ class Order(models.Model):
 class OrderItem(models.Model):
     """订单详情表"""
     product_name = models.ForeignKey(Product, null=True, on_delete=models.SET_NULL, verbose_name="商品名称")
+    order_number = models.ForeignKey(Order, related_name="order_number", blank=True, null=True,
+                                     on_delete=models.SET_NULL, verbose_name="订单编号")
     num = models.IntegerField(null=True, verbose_name="商品数量")
-    nuit_price = models.FloatField(null=True, verbose_name="商品单价")
+    unit_price = models.FloatField(null=True, verbose_name="商品单价")
     total_price = models.FloatField(null=True, verbose_name="商品总价")
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
 
-    def __init__(self):
-        return self.id
+    def __unicode__(self):
+        return self.order_number
 
     class Meta:
         ordering = ['id']
@@ -110,11 +113,28 @@ class Warehousing(models.Model):
     """入库信息表"""
     ware_num = models.CharField(max_length=30, verbose_name="入库编号")
     product = models.ForeignKey(Product, null=True, on_delete=models.SET_NULL, verbose_name="入库商品")
-    num = models.IntegerField(null=True, verbose_name="入库数量")
+    # num = models.IntegerField(null=True, verbose_name="入库数量")
     create_time = models.DateTimeField(auto_now_add=True)
+    last_time = models.DateTimeField()
+    remark = models.CharField(max_length=255, null=True, blank=True, verbose_name="备注")
 
     def __unicode__(self):
         return self.ware_num
+
+    class Meta:
+        ordering = ['id']
+
+
+class Reserve(models.Model):
+    """库存表"""
+    reserve_id = models.CharField(max_length=30, verbose_name="库存编号")
+    product = models.ForeignKey(Product, null=True, on_delete=models.SET_NULL, verbose_name="库存商品")
+    reserve_num = models.IntegerField(null=True, verbose_name="库存数量")
+    last_time = models.DateTimeField(null=True, blank=True)
+    create_time = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return self.reserve_id
 
     class Meta:
         ordering = ['id']

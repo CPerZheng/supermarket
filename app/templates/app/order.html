@@ -1,0 +1,376 @@
+{% extends 'app/base.html' %}
+{% load staticfiles %}
+{% block head %}
+{% endblock %}
+{#    <div class="d-flex align-items-stretch">#}
+{#      <div class="tlinks">Collect from <a href="http://www.cssmoban.com/"  title="网站模板">网站模板</a></div>#}
+{% block content %}
+<style>
+    input:focus {
+        outline: none !important;
+    }
+
+    input {
+        box-shadow: none !important;
+    }
+    .addpro {
+        border: 1px solid rgb(206, 212, 218);
+        border-radius: 2rem;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+        outline: none;
+        width: 210px;
+    }
+    .create-btn {
+        padding: 3px 10px;
+    }
+    .cost-li {
+        list-style: none;
+        display: contents;
+        font-size: x-large;
+    }
+    .cost-ul {
+        padding-right: 26px;
+        margin: 0;
+        float: right;
+    }
+    .all-product {
+        margin-bottom: 10px;
+    }
+    .order_del:hover, .order_back:hover  {
+        cursor: pointer;
+    }
+</style>
+    <section class="py-5">
+        <div class="col-lg-12 mb-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="h6 text-uppercase mb-0">订单操作栏</h3>
+                </div>
+                <div class="card-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <form class="form-classify" method="get">
+                                <div class="input-group mb-3">
+                                    <input type="text" placeholder="输入订单编号" aria-label="Recipient's username"
+                                           aria-describedby="button-addon2" value="{{ order_search }}"
+                                           class="form-control" id="order_search" name="order_search">
+                                    <div class="input-group-append">
+                                        <button id="button-addon2" type="submit" class="btn btn-primary">搜索</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target=".bs-example-modal-lg">
+                                添加订单
+                            </button>
+                            <!-- Modal -->
+                            <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+                                 aria-hidden="true" class="modal fade text-left">
+                                <div role="document" class="modal-dialog modal-lg">
+                                    <!--form action="order" method="post"-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 id="exampleModalLabel" class="modal-title">创建订单</h4>
+                                                <button type="button" data-dismiss="modal" aria-label="Close"
+                                                        class="close">
+                                                    <span aria-hidden="true">×</span></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>添加商品</p>
+                                                <div class="form-group" id="single-product">
+                                                    <div id="product" class="all-product">
+                                                        <select class="addpro product" placeholder="添加商品">
+                                                            {% for o in product_list %}
+                                                                <option value="{{ o.id }}">{{ o.name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                        <input type="text" placeholder="商品单价"
+                                                               class="addpro single_price">
+                                                        <input type="number" min="1" placeholder="商品数量"
+                                                               class="addpro num">
+                                                        <button type="button" id="add-single"
+                                                                class="create-btn btn btn-success"
+                                                                onclick="AddProductDiv('product')">添加
+                                                        </button>
+                                                        <button type="button" id="del-single"
+                                                                class="create-btn btn btn-danger"
+                                                                onclick="DelProductDiv(this)">删除
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <!--
+                                                    <div class="total-cost">
+                                                        <ul class="cost-ul">
+                                                            <li class="cost-li">总价:</li>
+                                                            <li class="cost-li" id="costs">未计算</li>
+                                                        </ul>
+                                                    </div>
+                                                    -->
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" data-dismiss="modal" class="btn btn-secondary">
+                                                    取消订单
+                                                </button>
+                                                <button type="button" class="btn btn-primary order_add">创建订单</button>
+                                            </div>
+                                        </div>
+                                    <!--/form-->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="line"></div>
+                        <div class="content"></div>
+                        <div class="col-lg-12 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="text-uppercase mb-0">订单列表</h6>
+                                </div>
+                                <div class="card-body" id="wraper">
+                                    <table class="table table-striped table-hover card-text">
+                                        <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>订单编号</th>
+                                            <th>订单总金额</th>
+                                            <th>订单状态</th>
+                                            <th>订单创建人员</th>
+                                            <th>订单创建时间</th>
+                                            <th>商品类型操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for oc in order_list %}
+                                            <tr>
+                                                <th scope="row">{{ oc.id }}</th>
+                                                <td>{{ oc.order_num }}</td>
+                                                <td>{{ oc.cost }}</td>
+                                                <td>
+                                                    {% if oc.order_state == '01' %}
+                                                    正常
+                                                    {% else %}
+                                                    退货
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ oc.operator.username }}</td>
+                                                <td>{{ oc.create_time|date:"Y-m-d" }}</td>
+                                                <td>
+                                                    <a href="/orderitems?id={{ oc.order_num }}" style="color: #4680ff">查看</a>
+                                                    <span class="order_del" style="color: red">删除</span>
+                                                    {% if oc.order_state == '01' %}
+                                                        <span class="order_back" style="color: #e0a800">退货</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!--orderItem check Modal -->
+                        <div id="checkModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                             aria-hidden="true" class="modal fade text-left">
+                            <div role="document" class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 id="exampleModalLabel" class="modal-title">商品列表</h4>
+                                        <button type="button" data-dismiss="modal" aria-label="Close" class="close">
+                                            <span aria-hidden="true">×</span></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>请填写需要修改的商品类型名称</p>
+                                        <div class="form-group">
+                                            <label>商品类型ID</label>
+                                            <input type="text" disabled placeholder="商品类型ID" class="form-control"
+                                                   id="edit_id">
+                                            <label>商品类型名称</label>
+                                            <input type="text" placeholder="商品类型名称" class="form-control" id="edit_name">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" data-dismiss="modal" class="btn btn-secondary">关闭修改
+                                        </button>
+                                        <button type="button" class="btn btn-primary pro_classify_edit">确认修改</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="line"></div>
+                        {% include "app/op-paginator.html" %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="{% static 'app/vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'app/layer/layer.js' %}"></script>
+    <script type="text/javascript">
+        var data = {};
+        var pdata = [];
+        var productdiv = 1;
+        var productname = 1;
+        var productdel = 1;
+
+        //计算总价
+        /*
+        function TotalCost() {
+            var all_product_price = 0;
+            $(".all-product").each(function () {
+                var num = $('.num').val();
+                var price = $('.single_price').val();
+                if (num != null && price != null) {
+                    all_product_price += num*price;
+                }
+            })
+            $('#costs').text(all_product_price);
+        }
+
+        //改变数量时统计总价
+        $("input[type='number']").change(function() {
+            console.log("value is change");
+            TotalCost();
+        })
+        */
+
+
+        //动态生成商品div
+        function AddProductDiv(strpro) {
+            var ap = document.getElementById(strpro);
+            var apdiv = document.createElement("div");
+            apdiv.id = "product"+ productdiv;
+            apdiv.className = "all-product";
+            var deletediv = document.createElement("div");
+            //拿到删除按钮的id并加1
+            var deletename = ap.childNodes.item(9).id + productdel;
+            {#var deletename = ap.childNodes.item(9).id + 1;#}
+            //将现有的divhtml赋值给新创建的div
+            apdiv.innerHTML = ap.innerHTML;
+            document.getElementById("single-product").appendChild(apdiv);
+            //给新的div的删除按钮赋值（动态加1）
+            apdiv.childNodes.item(9).id = deletename;
+            productdiv++;
+            productname++;
+            productdel++;
+        }
+
+        //动态删除商品div
+        function DelProductDiv(obj) {
+            //获取本删除按钮的id值，并创建对象
+            var strid = obj.id;
+            console.log(strid);
+            var dp = document.getElementById(strid);
+            var z = dp.parentElement;
+            //找到这个删除按钮对应的父ID的值
+            var stridone = z.id;
+            //判断本id对应的值并删除
+            var my = document.getElementById(stridone);
+            console.log(my);
+            if (my != null && stridone != "product") {
+                my.parentNode.removeChild(my);
+            }
+        }
+
+        //创建订单
+        $('.order_add').click(function () {
+            //循环获得所有商品
+            //添加至集合
+            //提交请求
+            var product_data = {};
+            var total_cost = 0;
+            $(".all-product").each(function () {
+                var product = $(this).contents().filter(".product").val();
+                var price = $(this).contents().filter(".single_price").val();
+                var num = $(this).contents().filter(".num").val();
+                product_data = {
+                    product: product,
+                    price: price,
+                    num: num
+                }
+                pdata.push(product_data);
+                total_cost += price*num;
+            })
+            data = {
+                pdata: JSON.stringify(pdata),
+                total_cost: total_cost,
+                action: 'add'
+            }
+            $.post('order', data).done(function (resp) {
+                if (resp.errno == '0') {
+                    //console.log(data);
+                    location.reload();
+                    //$('.pro_classify_edit').hide();
+                    alert("创建成功!");
+                } else {
+                    alert("创建失败!");
+                }
+            })
+        })
+
+        //删除订单
+        $('.order_del').click(function () {
+            data['order_id'] = $(this).parents('tr').find('td')[0].innerHTML;
+            data['action'] = 'del',
+            layer.confirm('确认删除该订单？删除订单后该订单里的商品数据也将被删除', {
+                btn: ['确认', '取消'] //按钮
+            }, function () {
+                $.ajax({
+                    url: '/order',
+                    type: 'post',
+                    dataType: 'json',
+                    data: data,
+                    success: function (response) {
+                        if (response.errno == '0') {
+                            layer.msg('删除成功', {icon: 1});
+                            location.reload()
+                        } else {
+                            alert("删除失败!,错误代码" + response.errno)
+                            location.reload()
+                        }
+                    }, error: function () {
+                        alert("服务器错误")
+                    }
+                })
+            }, function () {
+                //layer.msg('也可以这样', {
+                //    time: 20000, //20s后自动关闭
+                //    btn: ['明白了', '知道了']
+                //});
+            });
+        })
+
+        //修改状态
+        $('.order_back').click(function () {
+            data['order_id'] = $(this).parents('tr').find('td')[0].innerHTML;
+            data['order_state'] = $(this).parents('tr').find('td')[2].innerHTML;
+            data['action'] = 'edit',
+            layer.confirm('确认将该订单退货？', {
+                btn: ['确认', '取消'] //按钮
+            }, function () {
+                $.ajax({
+                    url: '/order',
+                    type: 'post',
+                    dataType: 'json',
+                    data: data,
+                    success: function (response) {
+                        if (response.errno == '0') {
+                            layer.msg('退货状态成功', {icon: 1});
+                            location.reload()
+                        } else {
+                            alert("状态修改失败!,错误代码" + response.errno)
+                            location.reload()
+                        }
+                    }, error: function () {
+                        alert("服务器错误")
+                    }
+                })
+            }, function () {
+                //layer.msg('也可以这样', {
+                //    time: 20000, //20s后自动关闭
+                //    btn: ['明白了', '知道了']
+                //});
+            });
+        })
+    </script>
+
+{% endblock content %}
