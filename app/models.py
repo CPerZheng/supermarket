@@ -8,7 +8,7 @@ from supermarket.settings import PERMS
 pre_type = [(u'01', u'干燥保存'), (u'02', u'低温保存')]
 
 # 商品状态
-pro_state = [(u'01', u'正常'), (u'02', u'退货')]
+pro_state = [(u'01', u'未入库'), (u'02', u'已入库'), (u'03', u'已出库'), (u'04', u'退货')]
 
 
 class Classify(models.Model):
@@ -115,7 +115,7 @@ class Warehousing(models.Model):
     product = models.ForeignKey(Product, null=True, on_delete=models.SET_NULL, verbose_name="入库商品")
     # num = models.IntegerField(null=True, verbose_name="入库数量")
     create_time = models.DateTimeField(auto_now_add=True)
-    last_time = models.DateTimeField()
+    last_time = models.DateTimeField(null=True, blank=True)
     remark = models.CharField(max_length=255, null=True, blank=True, verbose_name="备注")
 
     def __unicode__(self):
@@ -128,6 +128,7 @@ class Warehousing(models.Model):
 class Reserve(models.Model):
     """库存表"""
     reserve_id = models.CharField(max_length=30, verbose_name="库存编号")
+    warenum = models.ForeignKey(Warehousing, null=True, on_delete=models.SET_NULL, verbose_name="入库编号")
     product = models.ForeignKey(Product, null=True, on_delete=models.SET_NULL, verbose_name="库存商品")
     reserve_num = models.IntegerField(null=True, verbose_name="库存数量")
     last_time = models.DateTimeField(null=True, blank=True)
