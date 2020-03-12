@@ -228,7 +228,7 @@ def order(request):
     """订单函数"""
     product_list = Product.objects.all()
     if request.method == "GET":
-        order_list = Order.objects.all()
+        order_list = Order.objects.all().order_by('-create_time')
         sw = request.GET.get('order_search', '').strip()
 
         if sw:
@@ -318,16 +318,21 @@ def orderitem_list(request):
 
 
 def warehousing(request):
-    """入库"""
+    """入库, 方法待改进"""
     if request.method == "GET":
         # 不包含退货的订单都筛选出来并按状态排序
-        order_list = Order.objects.exclude(order_state=u'04').order_by('order_state')
+        order_list = Order.objects.filter(order_state=u'01')
+        # 获取查询字段
+        order_search = request.GET.get('order_search', '')
+        if order_search:
+            order_list = Order.objects.filter(order_num__contains=order_search, order_state=u'01')
         # 分页器
         p = int(request.GET.get('page', 1))
         limit = int(request.GET.get('limit', 10))
         paginator = Paginator(order_list, limit)
         page = paginator.page(p)
         data = {
+            'order_search': order_search,
             'order_list': order_list,
             'paginator': page
         }
@@ -336,7 +341,7 @@ def warehousing(request):
         data = request.POST.dict()
         number = data.get('number', '')
         action = data.get('action', '')
-        if action == "ware":
+        if action == "sin_ware":  # 只有一个订单
             if number:
                 # 修改订单状态
                 wareorder = Order.objects.get(order_num=number)
@@ -372,3 +377,42 @@ def warehousing(request):
                 return write_json({"errno": '0', "msg": "success!"})
             else:
                 return write_json({"error": '1', "msg": "找不到该订单!"})
+        elif action == "wares":  # 一个或多个订单
+            odata = request.POST.get("orderlist")  # 获取数据
+            orderlist = json.loads(odata)  # json格式化数据
+            for ol in orderlist:
+                # 改变订单状态
+                o = Order.objects.get(id=ol)
+                o.order_state = u'02'
+                o.save()
+                # 订单商品入库
+                op = OrderItem.objects.filter(order_number=o)
+                number = o.order_num
+                num = 0
+                for p in op:
+                    num += 1
+                    wnum = str(number) + str(num)  # 入库编号
+                    lasttime = datetime.datetime.now()  # 最后更新时间
+                    # 入库
+                    pr = Product.objects.get(pro_num=p.product_name.pro_num)
+                    Warehousing.objects.create(
+                        ware_num=wnum,
+                        product=pr,
+                        last_time=lasttime,
+                        remark=number
+                    )
+
+                    # 获取最新创建的入库商品,前提是以id排序好的(该获取方法可改进)
+                    wh = Warehousing.objects.last()
+
+                    # 录入库存
+                    Reserve.objects.create(
+                        reserve_id=product_num_id(n=2),
+                        warenum=wh,
+                        product=pr,
+                        reserve_num=p.num,
+                        last_time=lasttime
+                    )
+            return write_json({"errno": '0', "msg": "success!"})
+        else:
+            return write_json({"errno": '1', "msg": "无操作指令"})
