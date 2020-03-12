@@ -242,7 +242,7 @@ def order(request):
 
         data = {
             'product_list': product_list,
-            'order_list': order_list,
+            'order_list': page.object_list,
             'total_count': total_count,
             'paginator': page,
             'order_search': sw
@@ -333,7 +333,7 @@ def warehousing(request):
         page = paginator.page(p)
         data = {
             'order_search': order_search,
-            'order_list': order_list,
+            'order_list': page.object_list,
             'paginator': page
         }
         return render(request, 'app/ware_housing.html', data)
@@ -416,3 +416,31 @@ def warehousing(request):
             return write_json({"errno": '0', "msg": "success!"})
         else:
             return write_json({"errno": '1', "msg": "无操作指令"})
+
+
+def reserve(request):
+    """库存功能"""
+    if request.method == 'GET':
+        res_list = Reserve.objects.all()
+        total_count = res_list.count()
+        res_search = request.GET.get('res_search', '')
+
+        """
+        分页
+        1.获取当前页
+        2.设置每页数据数量
+        3.定义分页器
+        4.获取当前页数据
+        """
+        p = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 10))
+        paginator = Paginator(res_list, limit)
+        page = paginator.page(p)
+
+        data = {
+            'res_list': page.object_list,
+            'res_search': res_search,
+            'total_count': total_count,
+            'paginator': page
+        }
+        return render(request, 'app/reserve.html', data)
