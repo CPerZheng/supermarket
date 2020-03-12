@@ -146,8 +146,12 @@
                                                 <td>{{ oc.cost }}</td>
                                                 <td>
                                                     {% if oc.order_state == '01' %}
-                                                    正常
-                                                    {% else %}
+                                                    未入库
+                                                    {% elif oc.order_state == '02' %}
+                                                    已入库
+                                                    {% elif oc.order_state == '03' %}
+                                                    已出库
+                                                    {% elif oc.order_state == '04' %}
                                                     退货
                                                     {% endif %}
                                                 </td>
