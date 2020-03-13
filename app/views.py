@@ -424,6 +424,12 @@ def reserve(request):
         res_list = Reserve.objects.all()
         total_count = res_list.count()
         res_search = request.GET.get('res_search', '')
+        if res_search:
+            res_list = Reserve.objects.filter(
+                Q(reserve_id=res_search) |
+                Q(warenum__ware_num=res_search) |
+                Q(product__name__contains=res_search)
+            )
 
         """
         分页
