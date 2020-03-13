@@ -1,0 +1,306 @@
+{% extends 'app/base.html' %}
+{% load staticfiles %}
+{% block head %}
+{% endblock %}
+<script src="{% static 'app/js/components/datepicker.js' %}"></script>
+<script src="{% static 'app/css/bootstrap-datepicker.css' %}"></script>
+<script src="{% static 'app/css/bootstrap.css' %}"></script>
+{% block content %}
+<style>
+    input:focus {
+        outline: none !important;
+    }
+
+    input {
+        box-shadow: none !important;
+    }
+
+    .pro_c {
+        padding: 0 !important;
+    }
+</style>
+    <section class="py-5">
+        <div class="col-lg-12 mb-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="h6 text-uppercase mb-0">库存表</h3>
+                </div>
+                <div class="card-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <form class="form-supplier" method="get">
+                                <div class="input-group mb-3">
+                                    <input type="text" placeholder="输入商品名称" aria-label="Recipient's username"
+                                           aria-describedby="button-addon2" value="{{ res_search }}"
+                                           class="form-control" id="res_search" name="res_search">
+                                    <div class="input-group-append">
+                                        <button id="button-addon2" type="submit" class="btn btn-primary">搜索</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="line"></div>
+                        <div class="col-lg-12 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="text-uppercase mb-0">库存展示</h6>
+                                </div>
+                                <div class="card-body" id="wraper">
+                                    <table class="table table-striped table-hover card-text">
+                                        <thead>
+                                        <tr>
+                                            <th>库存编号</th>
+                                            <th>商品名称</th>
+                                            <th>入库编号</th>
+                                            <th>库存数量</th>
+                                            <th>创建时间</th>
+                                            <th>最后更新时间</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for res in res_list %}
+                                            <tr>
+                                                <th scope="row">{{ res.reserve_id }}</th>
+                                                <td>{{ res.product.name }}</td>
+                                                <td>{{ res.warenum.ware_num }}</td>
+                                                <td>{{ res.reserve_num }}</td>
+                                                <td>{{ res.last_time|date:"Y-m-d" }}</td>
+                                                <td>{{ res.create_time|date:"Y-m-d" }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!--supplier edit Modal -->
+                        <div id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                             aria-hidden="true" class="modal fade text-left">
+                            <div role="document" class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 id="exampleModalLabel" class="modal-title">商品修改</h4>
+                                        <button type="button" data-dismiss="modal" aria-label="Close" class="close">
+                                            <span aria-hidden="true">×</span></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>请填写需要修改的商品名称</p>
+                                        <div class="form-group">
+                                            <label>商品ID</label>
+                                            <input type="text" placeholder="商品ID" disabled class="form-control" id="product_id">
+                                            <label>商品名称</label>
+                                            <input type="text" placeholder="商品名称" class="form-control" id="name">
+                                            <label>商品类型</label>
+                                            <div class="col-md-12 select pro_c">
+                                                <select name="classify" class="form-control classify" id="sel_classify">
+                                                    {% for c in product_classify %}
+                                                        <option value="{{ c.id }}">{{ c.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <label>生产日期</label>
+                                            <input type="text" class="form-control date_of_manufacture da"
+                                                   id="date_of_manufacture">
+                                            <label>保质期</label>
+                                            <input type="text" class="form-control guarantee_period da"
+                                                   id="guarantee_period">
+                                            <label>存储条件</label>
+                                            <div class="col-md-12 select pro_c">
+                                                <select name="preserve" class="form-control" id="preserve">
+                                                    <option value="01">干燥保存</option>
+                                                    <option value="02">低温保存</option>
+                                                </select>
+                                            </div>
+                                            <label>计量单位</label>
+                                            <div class="col-md-12 select pro_c">
+                                                <select name="uom" class="form-control" id="uom">
+                                                    <option value="件">件</option>
+                                                    <option value="箱">箱</option>
+                                                    <option value="千克">千克</option>
+                                                    <option value="瓶">瓶</option>
+                                                </select>
+                                            </div>
+                                            <label>供应商</label>
+                                            <div class="col-md-12 select pro_c">
+                                                <select name="supplier" class="form-control supplier" id="supplier">
+                                                    {% for s in product_supplier %}
+                                                        <option value="{{ s.id }}">{{ s.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" data-dismiss="modal" class="btn btn-secondary">关闭修改
+                                        </button>
+                                        <button type="button" class="btn btn-primary product_edit">确认修改</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="line"></div>
+                        {% include "app/op-paginator.html" %}{# 参考文件admin-product-record.html 363 #}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="{% static 'app/vendor/jquery/jquery.min.js' %}"></script>
+{#    <script src="{% static 'app/js/bootstrap.min.js' %}"></script>#}
+    <script src="{% static 'app/vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'app/js/bootstrap-datepicker.js' %}"></script>
+    <script src="{% static 'app/js/bootstrap-datepicker.zh-CN.min.js' %}"></script>
+    <script src="{% static 'app/js/bootstrap-select.min.js' %}"></script>
+    <script src="{% static 'app/layer/layer.js' %}"></script>
+    <script type="text/javascript">
+        data = {};
+        $('.da').datepicker({
+            language: 'zh-CN',
+            format: 'yyyy-mm-dd',
+        });
+        $('.product_add').click(function () {
+            data['name'] = $('.name').val();
+            data['classify'] = $('.classify').val();
+            data['date_of_manufacture'] = $('.date_of_manufacture').val();
+            data['guarantee_period'] = $('.guarantee_period').val();
+            data['preserve'] = $('.preserve').val();
+            data['supplier'] = $('.supplier').val();
+            data['uom'] = $('.uom').val();
+            data['action'] = "add";
+            if (data['name']) {
+                $.post('/product', data).done(function (resp) {
+                    if (resp.errno == '0') {
+                        location.reload()
+                        $('.product_add').hide();
+                        alert('添加成功!');
+                    } else {
+                        alert('添加失败!');
+                    }
+                })
+            } else {
+                alert('字段填写不能为空!');
+            }
+
+        })
+
+        $('.edit').click(function () {
+            $('#product_id').val($(this).parents('tr').find('th')[0].innerHTML);
+            $('#name').val($(this).parents('tr').find('td')[0].innerHTML);
+            $('#pro_num').val($(this).parents('tr').find('td')[1].innerHTML);
+            {#$('#classify').val($(this).parents('tr').find('td')[2].innerHTML);#}
+            {#$('#date_of_manufacture').val($(this).parents('tr').find('td')[3].innerHTML);#}
+            {#$('#guarantee_period').val($(this).parents('tr').find('td')[4].innerHTML);#}
+            {#$('#preserve').val($(this).parents('tr').find('td')[5].innerHTML);#}
+            {#$('#supplier').val($(this).parents('tr').find('td')[6].innerHTML);#}
+
+            // 设置选中值
+            var select_c = document.getElementById("sel_classify");
+            var sc = $(this).parents('tr').find('td')[2].innerHTML;
+            for (var i = 0; i < select_c.options.length; i++) {
+                if (select_c.options[i].innerHTML == sc) {
+                    select_c.options[i].selected = true;
+                    break;
+                }
+            }
+
+            // 设置日期
+            var dm = $(this).parents('tr').find('td')[3].innerHTML;
+            $('#date_of_manufacture').attr('placeholder', dm);
+
+            var gp = $(this).parents('tr').find('td')[4].innerHTML;
+            $('#guarantee_period').attr('placeholder', gp);
+
+            // 保存条件设定
+            var select_p = document.getElementById("preserve");
+            var pr = $(this).parents('tr').find('td')[5].innerHTML;
+            // var str = pr.replace(/^\s*|\s*$/g,"");  //删除字符左右两边空格
+            var str = pr.trim();
+            for (var i = 0; i < select_p.options.length; i++) {
+                if (select_p.options[i].innerHTML == str) {
+                    select_p.options[i].selected = true;
+                    break;
+                }
+            }
+
+            var select_u = document.getElementById("uom");
+            var su = $(this).parents('tr').find('td')[6].innerHTML;
+            for(var i = 0; i < select_u.options.length; i++) {
+                if (select_u.options[i].innerHTML == su) {
+                    select_u.options.selected = true;
+                    break;
+                }
+            }
+
+            var select_s = document.getElementById("supplier");
+            var ss = $(this).parents('tr').find('td')[7].innerHTML;
+            for (var i = 0; i < select_s.options.length; i++) {
+                if (select_s.options[i].innerHTML == ss) {
+                    select_s.options[i].selected = true;
+                    break;
+                }
+            }
+
+
+        })
+
+        // 修改
+        $('.product_edit').click(function () {
+            data['action'] = "edit";
+            data['product_id'] = $('#product_id').val();
+            data['name'] = $('#name').val();
+            data['classify'] = $('#sel_classify').val();
+            data['date_of_manufacture'] = $('#date_of_manufacture').val();
+            data['guarantee_period'] = $('#guarantee_period').val();
+            data['preserve'] = $('#preserve').val();
+            data['uom'] = $('#uom').val();
+            data['supplier'] = $('#supplier').val();
+            console.log(data)
+            if (data['product_id']) {
+                $.post('/product', data).done(function (resp) {
+                    if (resp.errno == '0') {
+                        location.reload()
+                        $('.product_edit').hide();
+                        alert("修改成功!");
+                    } else {
+                        alert("修改失败!");
+                    }
+                })
+            } else {
+                alert("字段不能为空!");
+            }
+        })
+        $('.product_del').click(function () {
+            data['product_id'] = $(this).parents('tr').find('th')[0].innerHTML;
+            data['action'] = 'del',
+                console.log(data);
+            layer.confirm('确认删除该供应商信息？', {
+                btn: ['确认', '取消'] //按钮
+            }, function () {
+                $.ajax({
+                    url: '',
+                    type: 'post',
+                    dataType: 'json',
+                    data: data,
+                    success: function (response) {
+                        if (response.errno == '0') {
+                            layer.msg('删除成功', {icon: 1});
+                            location.reload()
+                        } else {
+                            alert("删除失败!,错误代码: " + response.errno)
+                            location.reload()
+                        }
+                    }, error: function () {
+                        alert("服务器错误")
+                    }
+                })
+            }, function () {
+                //layer.msg('也可以这样', {
+                //    time: 20000, //20s后自动关闭
+                //    btn: ['明白了', '知道了']
+                //});
+            });
+        })
+    </script>
+
+{% endblock content %}

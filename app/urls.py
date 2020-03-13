@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^order$', app.views.order),
     url(r'^orderitems$', app.views.orderitem_list),
     url(r'^warehousing$', app.views.warehousing),
+    url(r'^reserve$', app.views.reserve),
 ]
