@@ -1,0 +1,48 @@
+{% extends 'app/base.html' %}
+{% load staticfiles %}
+{% block head %}
+{% endblock %}
+{% block title %} 宝藏提示页面 {% endblock %}
+{% block content %}
+    <style>
+        input:focus {
+            outline: none !important;
+        }
+
+        input {
+            box-shadow: none !important;
+        }
+    </style>
+
+    <div class="container">
+        <h1 class="mt-5">这 里 是 错 误 提 示 页 面</h1>
+    </div>
+    <div class="container">
+        <div class="jumbotron">
+            <form class="form-inline">
+                <!--
+                <div class="form-group" style="padding-left: 130px">
+{#                    <img src="{% static 'app/img/dysjgdxccx.jpg' %}">#}
+
+                </div>
+                -->
+                <div style="padding-left: 200px">
+                    <h1 style="color: red">{{ msg }}</h1>
+                    <strong><p>错误提示</p></strong>
+                </div>
+            </form>
+        </div>
+    </div>
+<!--p>edit by cperzheng@163.com</p -->
+
+    <script src="{% static 'app/vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'app/layer/layer.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            setTimeout(function () {
+                location.href = document.referrer
+            }, 5000)
+        })
+    </script>
+
+{% endblock content %}

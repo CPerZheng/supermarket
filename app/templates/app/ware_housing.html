@@ -1,9 +1,8 @@
 {% extends 'app/base.html' %}
 {% load staticfiles %}
+{% block title %}商品入库{% endblock title %}
 {% block head %}
-{% endblock %}
-<script src="{% static 'app/js/components/datepicker.js' %}"></script>
-<script src="{% static 'app/css/bootstrap-datepicker.css' %}"></script>
+{% endblock head %}
 <script src="{% static 'app/css/bootstrap.css' %}"></script>
 {% block content %}
     <style>
@@ -13,10 +12,6 @@
 
         input {
             box-shadow: none !important;
-        }
-
-        .pro_c {
-            padding: 0 !important;
         }
 
         .custom-checkbox .custom-control-label::before {
@@ -51,12 +46,6 @@
                                     </div>
                                 </div>
                             </form>
-                            <!--
-                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal">
-                                商品入库
-                            </button>
-                            -->
-                            <!-- Modal -->
                         </div>
                         <div class="line"></div>
                         <div class="col-lg-12 mb-4">
@@ -128,26 +117,19 @@
                 </div>
             </div>
         </div>
+    <!--p>edit by cperzheng@163.com</p -->
     </section>
 
     <script src="{% static 'app/vendor/jquery/jquery.min.js' %}"></script>
-    {#    <script src="{% static 'app/js/bootstrap.min.js' %}"></script>#}
-    <script src="{% static 'app/vendor/bootstrap/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'app/js/bootstrap-datepicker.js' %}"></script>
-    <script src="{% static 'app/js/bootstrap-datepicker.zh-CN.min.js' %}"></script>
-    <script src="{% static 'app/js/bootstrap-select.min.js' %}"></script>
     <script src="{% static 'app/layer/layer.js' %}"></script>
     <script type="text/javascript">
         data = {};
-        $('.da').datepicker({
-            language: 'zh-CN',
-            format: 'yyyy-mm-dd',
-        });
 
         // 查看订单详情
         $('.order_list').click(function () {
             //获取订单编号,跳转到详情页
             var number = $(this).parents('tr').find('td')[0].innerHTML;
+            //alert(location.href);
             location.href = '/orderitems?id=' + number;
         })
 
@@ -156,7 +138,7 @@
             data['number'] = $(this).parents('tr').find('td')[0].innerHTML;
             data['action'] = 'sin_ware';
             layer.confirm('确认将该订单中所有的商品导入库吗？', {
-                btn: ['确认', '取消'] //按钮
+                btn: ['确认', '取消'] //按
             }, function () {
                 $.ajax({
                     url: '',

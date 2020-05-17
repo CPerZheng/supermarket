@@ -1,0 +1,144 @@
+{% extends 'app/base.html' %}
+{% load staticfiles %}
+{% block title %} 修改员工信息 {% endblock %}
+{% block head %}
+    <style>
+        input:focus {
+            outline: none !important;
+        }
+
+        input {
+            box-shadow: none !important;
+        }
+
+    </style>
+{% endblock head %}
+{% block content %}
+    <section class="py-5">
+        <div class="col-lg-12 mb-5">
+            <form role='form' class='form-horizontal ' method='post'>
+                {% csrf_token %}
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="h6 text-uppercase mb-0">修改员工信息</h3>
+                    </div>
+                    <div class="card-body">
+                        <form class="form-horizontal">
+                            <div class="form-group row">
+                                <label class="col-md-3 form-control-label">员工姓名</label>
+                                <div class="col-md-9">
+                                    <input type="text" name="name" id="name" placeholder="员工姓名"
+                                           class="form-control" value="{{ user.employee.name }}">
+                                    <input style="display:none" id="id" name="id" type="text" value="{{ user.id }} ">
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                                <label class="col-md-3 form-control-label">员工电话</label>
+                                <div class="col-md-9">
+                                    <input type="text" name="phone" id="phone" placeholder="员工电话"
+                                           class="form-control" value="{{ user.employee.phone }}">
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                                <label class="col-md-3 form-control-label">员工邮箱</label>
+                                <div class="col-md-9">
+                                    <input type="text" name="email" id="email" placeholder="员工邮箱"
+                                           class="form-control" value="{{ user.email }}">
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                                <label class="col-md-3 form-control-label">员工职位</label>
+                                <div class="col-md-9">
+                                    <input type="text" name="position" id="position" placeholder="员工职位"
+                                           class="form-control" value="{{ user.employee.position }}">
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                                <label class="col-md-3 form-control-label">重新设置密码</label>
+                                <div class="col-md-9">
+                                    <input type="password" name="password" id="password" placeholder="登陆密码"
+                                           class="form-control">
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                                <label class="col-md-3 form-control-label">工作权限</label>
+                                <div class="col-md-9">
+                                    {% for key, value in perm.items %}
+                                        <div class="custom-control custom-checkbox">
+                                            <input id="{{ key }}" type="checkbox" class="custom-control-input"
+                                                   name="check" value="{{ key }}"
+                                                    {% if key in pos %} checked="checked"{% endif %}>
+                                            <label for="{{ key }}" class="custom-control-label">
+                                                {{ value }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                                <div class="col-md-9 ml-auto">
+                                    <button type="button" class="btn btn-secondary"
+                                            onclick="javascript:history.back(-1)">
+                                        取消修改
+                                    </button>
+                                    <button type="button" class="btn btn-primary update">确认修改</button>
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            {#                            {% include "app/op-paginator.html" %}#}
+                        </form>
+                    </div>
+                </div>
+            </form>
+            <div class="copy_layout" data='{{ data }}'></div>
+        </div>
+    </section>
+    <!--p>edit by cperzheng@163.com</p -->
+
+    <script src="{% static 'app/vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'app/layer/layer.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            data = $('.copy_layout').attr('data')
+            if (data != '') {
+                alert(data)
+            }
+            //修改员工信息
+            $('.update').click(function () {
+                var name = $('#name').val();
+                var phone = $('#phone').val();
+                var email = $('#email').val();
+                var psd = $('#password').val();
+
+                // 判断所提交的资料是否符合要求
+                if (name.length < 3 || name.length > 20) {
+                    window.alert("名称的字符长度必须在3~20之间")
+                    return false;
+                }
+                if (phone.length < 6 || name.length > 12) {
+                    window.alert("电话号码的字符长度必须在6~12之间")
+                    return false;
+                }
+                if (email.length < 4 || email.length > 20) {
+                    window.alert("邮箱的字符长度必须在4~20之间")
+                    return false;
+                }
+                if (psd != null) {
+                    if (email.length > 0 && email.length < 6 || email.length > 20) {
+                        window.alert("名称的字符长度必须在6~20之间")
+                        return false;
+                    }
+                }
+                $('form').submit();
+            })
+
+        })
+    </script>
+
+{% endblock content %}

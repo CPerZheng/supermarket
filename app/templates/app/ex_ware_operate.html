@@ -1,0 +1,233 @@
+{% extends 'app/base.html' %}
+{% load staticfiles %}
+{% block title %} 商品出库 {% endblock %}
+{% block head %}
+    <style>
+        input:focus {
+            outline: none !important;
+        }
+
+        input {
+            box-shadow: none !important;
+        }
+
+        .custom-checkbox .custom-control-label::before {
+            top: -0.9rem;
+            border-radius: 0.3rem;
+        }
+
+        .custom-checkbox .custom-control-input:checked ~ .custom-control-label::after {
+            top: -0.9rem;
+        }
+
+        .custom-control-label::after {
+            top: -0.75em;
+        }
+    </style>
+
+{% endblock head %}
+<script src="{% static 'app/css/bootstrap.css' %}"></script>
+{% block content %}
+    <section class="py-5">
+        <div class="col-lg-12 mb-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="h6 text-uppercase mb-0">商品出库操作栏</h3>
+                </div>
+                <div class="card-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <form class="form-classify" method="get">
+                                <div class="input-group mb-3">
+                                    <input type="text" placeholder="输入商品名称或库存编号" aria-label="Recipient's username"
+                                           aria-describedby="button-addon2" value="{{ product_search }}"
+                                           class="form-control" id="product_search" name="product_search">
+                                    <div class="input-group-append">
+                                        <button id="button-addon2" type="submit" class="btn btn-primary">搜索</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="line"></div>
+                        <div class="col-lg-12 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="text-uppercase mb-0">可以出库的商品展示</h6>
+                                </div>
+                                <div class="card-body" id="wraper">
+                                    <table class="table table-striped table-hover card-text">
+                                        <thead>
+                                        <tr>
+                                            <th>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input id="all-checkbox" type="checkbox"
+                                                           class="custom-control-input">
+                                                    <label for="all-checkbox" class="custom-control-label"></label>
+                                                </div>
+                                            </th>
+                                            <th>库存编号</th>
+                                            <th>入库编号</th>
+                                            <th>产品名称</th>
+                                            <th>库存数量</th>
+                                            <th>最后更新时间</th>
+                                            <th>创建时间</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for re in reserve_list %}
+                                            <tr>
+                                                <th scope="row">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input id="{{ re.id }}" value="{{ re.id }}" name="sincheckbox"
+                                                               type="checkbox"
+                                                               class="custom-control-input">
+                                                        <label for="{{ re.id }}" class="custom-control-label"></label>
+                                                    </div>
+                                                </th>
+                                                <td>{{ re.reserve_id }}</td>
+                                                <td>{{ re.warenum.ware_num }}</td>
+                                                <td>{{ re.product.name }}</td>
+                                                <td><input type="number" min="1" max="{{ re.reserve_num }}"
+                                                           id="{{ re.reserve_id }}" value="{{ re.reserve_num }}"
+                                                           class="num">
+                                                </td>
+                                                <td>{{ re.last_time|date:"Y-m-d" }}</td>
+                                                <td>{{ re.create_time|date:"Y-m-d" }}</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-success delivery_pro"
+                                                            style="padding: 2px 20px;">
+                                                        出库
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <div style="margin-right: 36px;">
+                                        <button type="button" class="btn btn-success all-product"
+                                                style="padding: 2px 20px; float: right">一键出库
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="line"></div>
+                        {% include "app/op-paginator.html" %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+<!--p>edit by cperzheng@163.com</p -->
+
+    <script src="{% static 'app/vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'app/layer/layer.js' %}"></script>
+    <script type="text/javascript">
+        var data = {};
+        var pdata = [];
+        // 全选或反选
+        $('input[id="all-checkbox"]').bind("click", function () {
+            $('input[name="sincheckbox"]').each(function () {
+                $(this).prop("checked", $("#all-checkbox").is(":checked"));
+            })
+        })
+
+        // 单件出库
+        $('.delivery_pro').click(function () {
+            data['reserve_id'] = $(this).parents('tr').find('td')[0].innerHTML;
+            var reserve_id = data['reserve_id'];
+            var name = $(this).parents('tr').find('td')[2].innerHTML;
+            data['number'] = document.getElementById(reserve_id).value;
+            data['action'] = "delivery";
+            console.log(data)
+            layer.confirm('确认将库存编号为: ' + data['reserve_id'] + ',名称为: ' + name + '的商品中的' + data['number'] + '件出库吗？', {
+                btn: ['确认', '取消'] //按钮
+            }, function () {
+                $.ajax({
+                    url: '',
+                    type: 'post',
+                    dataType: 'json',
+                    data: data,
+                    success: function (response) {
+                        if (response.errno == '0') {
+                            layer.msg('出库成功', {icon: 1});
+                            location.reload();
+                        } else {
+                            alert("出库失败!,错误代码" + response.errno + ", 错误信息: " + response.msg)
+                            location.reload();
+                        }
+                    }, error: function () {
+                        alert("服务器错误");
+                        location.reload();
+                    }
+                })
+            }, function () {
+                //layer.msg('也可以这样', {
+                //    time: 20000, //20s后自动关闭
+                //    btn: ['明白了', '知道了']
+                //});
+            });
+        })
+
+        // 多件出库
+        $('.all-product').click(function () {
+            var product_data = {};
+            var number = null;
+            var num = 0;
+            var flag = false;
+            $('input[name="sincheckbox"]').each(function () {
+                if($(this).is(":checked")) {
+                    flag = true;
+                    number = $(this).parents('tr').find('td')[0].innerHTML;
+                    num = document.getElementById(number).value;
+                    product_data = {
+                        'reserve_id': number,
+                        'num': num
+                    }
+                    pdata.push(product_data);
+                }
+            })
+            data = {
+                product_data: JSON.stringify(pdata),
+                action: "all_delivery",
+            }
+            console.log(data['product_data']);
+            if (flag) {
+                layer.confirm('确认将多件商品出库吗？', {
+                    btn: ['确认', '取消'] //按钮
+                }, function () {
+                    $.ajax({
+                        url: '',
+                        type: 'post',
+                        dataType: 'json',
+                        data: data,
+                        success: function (response) {
+                            if (response.errno == '0') {
+                                layer.msg('出库成功', {icon: 1});
+                                location.reload();
+                            } else {
+                                alert("出库失败!,错误代码" + response.errno + ", 错误信息: " + response.msg)
+                                location.reload();
+                            }
+                        }, error: function () {
+                            alert("服务器错误");
+                            location.reload();
+                        }
+                    })
+                }, function () {
+                    //layer.msg('也可以这样', {
+                    //    time: 20000, //20s后自动关闭
+                    //    btn: ['明白了', '知道了']
+                    //});
+                });
+            } else {
+                alert("请选择需要出库的商品");
+                return false;
+            }
+
+        })
+    </script>
+
+{% endblock content %}

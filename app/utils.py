@@ -18,17 +18,22 @@ def product_num_id(n):
     # 判断是商品编号还是库存编号创建操作
     # 商品编号创建:n=1
     # 库存编号创建:n=2
+    # 出库编号创建:n=3
     if n == 1:
         al_num = 2
+        num = str(random.randint(1000, 5000))
     elif n == 2:
         al_num = 4
+        num = str(random.randint(5001, 9000))
+    elif n == 3:
+        al_num = 3
+        num = str(random.randint(9001, 15000))
 
     while c < al_num:
         ch = random.choice(alphabet)
         cl.append(ch)
         c += 1
     characters = ''.join(cl)
-    num = str(random.randint(1000, 5000))
 
     return '{0}{1}'.format(str(characters), num)
 
