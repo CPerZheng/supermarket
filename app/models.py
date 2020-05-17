@@ -16,7 +16,7 @@ class Classify(models.Model):
     name = models.CharField(max_length=30, verbose_name="商品类型名称")
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -31,7 +31,7 @@ class Supplier(models.Model):
     card_num = models.CharField(max_length=30, blank=True, verbose_name="银行卡号")
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -48,7 +48,7 @@ class Employee(models.Model):
     class Meta:
         permissions = PERMS
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -69,7 +69,7 @@ class Product(models.Model):
                                  verbose_name="供应商")
     last_update = models.DateTimeField(blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -85,7 +85,7 @@ class Order(models.Model):
                                  verbose_name="操作人员")
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.order_num
 
     class Meta:
@@ -102,8 +102,8 @@ class OrderItem(models.Model):
     total_price = models.FloatField(null=True, verbose_name="商品总价")
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
 
-    def __unicode__(self):
-        return self.order_number
+    def __str__(self):
+        return self.order_number.order_num
 
     class Meta:
         ordering = ['id']
@@ -118,7 +118,7 @@ class Warehousing(models.Model):
     last_time = models.DateTimeField(null=True, blank=True)
     remark = models.CharField(max_length=255, null=True, blank=True, verbose_name="备注")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.ware_num
 
     class Meta:
@@ -134,7 +134,7 @@ class Reserve(models.Model):
     last_time = models.DateTimeField(null=True, blank=True)
     create_time = models.DateTimeField(auto_now_add=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.reserve_id
 
     class Meta:
@@ -145,10 +145,11 @@ class ExWareHousing(models.Model):
     """出库信息表"""
     ex_ware_num = models.CharField(max_length=30, verbose_name="出库编号")
     ex_product = models.ForeignKey(Product, null=True, on_delete=models.SET_NULL, verbose_name="出库商品")
+    ex_reserve = models.ForeignKey(Reserve, null=True, on_delete=models.SET_NULL, verbose_name="库存编号")
     out_num = models.IntegerField(null=True, verbose_name="出库数量")
     create_time = models.DateTimeField(auto_now_add=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.ex_ware_num
 
     class Meta:

@@ -109,7 +109,10 @@ AUTH_PASSWORD_VALIDATORS = [
 PERMS = (
     ('order_manage', u'订单管理'),
     ('product_manage', u'商品管理'),
-    ('employe_manage', u'员工管理'),
+    ('warehousing_manage', u'商品入库管理'),
+    ('exwarehousing_manage', u'商品出库管理'),
+    ('reserve_manage', u'库存管理'),
+    ('employee_manage', u'员工管理'),
 )
 
 

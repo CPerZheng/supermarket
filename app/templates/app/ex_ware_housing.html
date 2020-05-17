@@ -1,0 +1,91 @@
+{% extends 'app/base.html' %}
+{% load staticfiles %}
+{% block head %}
+{% endblock %}
+{#    <div class="d-flex align-items-stretch">#}
+{#      <div class="tlinks">Collect from <a href="http://www.cssmoban.com/"  title="网站模板">网站模板</a></div>#}
+<style>
+    input:focus {
+        outline: none !important;
+    }
+
+    input {
+        box-shadow: none !important;
+    }
+</style>
+{% block content %}
+    <section class="py-5">
+        <div class="col-lg-12 mb-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="h6 text-uppercase mb-0">商品出库操作栏</h3>
+                </div>
+                <div class="card-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <form class="form-classify" method="get">
+                                <div class="input-group mb-3">
+                                    <input type="text" placeholder="输入商品名称或出库编号" aria-label="Recipient's username"
+                                           aria-describedby="button-addon2" value="{{ product_search }}"
+                                           class="form-control" id="product_search" name="product_search">
+                                    <div class="input-group-append">
+                                        <button id="button-addon2" type="submit" class="btn btn-primary">搜索</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="line"></div>
+                        <div class="col-lg-12 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="text-uppercase mb-0">商品出库展示</h6>
+                                </div>
+                                <div class="card-body" id="wraper">
+                                    <table class="table table-striped table-hover card-text">
+                                        <thead>
+                                        <tr>
+                                            <th>出库编号</th>
+                                            <th>库存编号</th>
+                                            <th>已出库商品</th>
+                                            <th>出库数量</th>
+                                            <th>出库时间</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for de in delivery_list %}
+                                            <tr>
+                                                <th scope="row">{{ de.ex_ware_num }}</th>
+                                                <td>{{ de.ex_reserve.reserve_id }}</td>
+                                                <td>{{ de.ex_product.name }}</td>
+                                                <td>{{ de.out_num }}</td>
+                                                <td>{{ de.create_time|date:"Y-m-d" }}</td>
+{#                                                <td>#}
+{#                                                    <button type="button" class="btn btn-danger classify_del">删除#}
+{#                                                    </button>#}
+{#                                                    <button type="button" class="btn btn-info classify_edit"#}
+{#                                                            data-toggle="modal" data-target="#editModal">修改#}
+{#                                                    </button>#}
+{#                                                </td>#}
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="line"></div>
+                        {% include "app/op-paginator.html" %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+<!--p>edit by cperzheng@163.com</p -->
+
+    <script src="{% static 'app/vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'app/layer/layer.js' %}"></script>
+    <script type="text/javascript">
+    </script>
+
+{% endblock content %}

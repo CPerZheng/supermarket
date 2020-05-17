@@ -1,9 +1,7 @@
 {% extends 'app/base.html' %}
 {% load staticfiles %}
+{% block title %} 商品类型管理 {% endblock title %}
 {% block head %}
-{% endblock %}
-{#    <div class="d-flex align-items-stretch">#}
-{#      <div class="tlinks">Collect from <a href="http://www.cssmoban.com/"  title="网站模板">网站模板</a></div>#}
 <style>
     input:focus {
         outline: none !important;
@@ -13,6 +11,7 @@
         box-shadow: none !important;
     }
 </style>
+{% endblock head %}
 {% block content %}
     <section class="py-5">
         <div class="col-lg-12 mb-5">
@@ -134,6 +133,7 @@
             </div>
         </div>
     </section>
+<!--p>edit by cperzheng@163.com</p -->
 
     <script src="{% static 'app/vendor/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'app/layer/layer.js' %}"></script>
